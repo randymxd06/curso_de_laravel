@@ -15,8 +15,8 @@ class homeController extends Controller{
         // Vista welcome //
         // return view('welcome');
 
-        // Retorno un mensaje //
-        return "Bienvenido a la pagina principal";
+        // Retorno una vista //
+        return view('home');
 
     }
 
