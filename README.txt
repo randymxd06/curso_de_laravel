@@ -90,9 +90,48 @@ En la terminal debemos usar el siguiente comando:
 
 php artisan migrate
 
-Esto ejecuta el metodo up y se crearan todas las tablas
+Esto ejecuta el metodo up y se crearan todas las tablas con sus respectivas columnas.
 
 NOTA: hay que tener bien configurado el archivo .env
+
+Para crear un migrate debemos ejecutar el siguiente comando:
+
+php artisan make:migration create_nombreMigracion_table
+
+Para revertir los cambios del migrate usamos el siguiente comando:
+
+php artisan migrate:rollback
+
+Si en dado caso quiero agregar una columna a una tabla pero no puedo hacer migrate debo utilizar el siguiente comando:
+
+php artisan migrate:fresh
+
+Esto lo que va a hacer borrar todas las tablas y crearlas denuevo con las nuevas columnas.
+
+NOTA: Si la tabla tiene algun registro, no debo usar este comando porque borra la tabla con todo y registros y la crea de nuevo.
+
+Si quiere agregar una columna pero que el codigo primero ejecute el metodo down antes que el up uso el siguiente comando:
+
+php artisan migrate:refresh
+
+Para agregar una columna a alguna tabla debemos ejecutar el siguiente comando en la terminal:
+
+php artisan make:migration add_nombreColumna_to_nombreTabla_table
+
+Si quiero modificar algun tipo de propiedad de una columna o tabla debo agregar una dependencia al archivo .json del proyecto usando el siguiente
+comando:
+
+composer require doctrine/dbal
+
+Creo una nueva migracion 
+
+
+
+
+
+
+
+
 
 
 
