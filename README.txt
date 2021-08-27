@@ -70,3 +70,20 @@ NOTA: un archivo .php no reconoce los archivos .blade.php asi que tenemos que ca
 
 Si queremos escribir mas de una linea de codigo HTML usamos @section y terminamos con endsection
 
+===========================================================================================================================================
+CÓMO CONECTAR CON LA BASE DE DATOS
+===========================================================================================================================================
+
+Para conectarnos con la base de datos debemos tener en cuenta que laravel solo trabaja con 4 gestores: MySQL, PostgreeSQL, SQL Server 
+y SQLite, una vez tengamos nuestra base de datos solo tenemos que ubicarnos en la ruta: config y ahi se encuentra un archivo llamado
+database.php
+
+Para configurar la informacion de laravel tengo que hacerlo en el archivo .env
+
+
+
+
+
+
+
+

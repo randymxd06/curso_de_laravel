@@ -15,7 +15,11 @@ return [
     |
     */
 
+    // Debemos decirle a qué base de datos se va a conectar //
     'default' => env('DB_CONNECTION', 'mysql'),
+
+    // Tambien lo puedo hacer de la siguiente manera pero no es muy seguro porque en github todos pueden ver estas informaciones //
+    // 'default' => 'mysql',
 
     /*
     |--------------------------------------------------------------------------
