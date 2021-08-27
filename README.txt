@@ -80,10 +80,19 @@ database.php
 
 Para configurar la informacion de laravel tengo que hacerlo en el archivo .env
 
+===========================================================================================================================================
+CÓMO HACER UN MIGRATE PARA LA BASE DE DATOS
+===========================================================================================================================================
 
+Las migraciones son para llevar un control de versiones de la base de datos.
 
+En la terminal debemos usar el siguiente comando:
 
+php artisan migrate
 
+Esto ejecuta el metodo up y se crearan todas las tablas
+
+NOTA: hay que tener bien configurado el archivo .env
 
 
 
