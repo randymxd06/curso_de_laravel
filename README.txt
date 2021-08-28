@@ -125,6 +125,48 @@ composer require doctrine/dbal
 
 Creo una nueva migracion 
 
+===========================================================================================================================================
+CÓMO HACER UN MODELO PARA USAR ELOQUENT + TINKER
+===========================================================================================================================================
+
+NOTA: Eloquent trata a cada uno de los registros de una tabla como si fuera un objeto.
+
+Para crear un modelo en la terminal debemos utilizar el siguiente comando:
+
+php artisan make:model nombreModelo
+
+Podemos usar tinker, para esto usamos el siguiente comando:
+
+php artisan tinker
+
+Si queremos salir de la linea de comando de tinker escribimos: exit
+
+Dentro de tinker tengo que especificar qué modelo quiero usar para eso usamos algo como lo siguiente:
+
+use App\Models\Curso;
+
+Una vez que le decimos a tinker que vamos a hacer uso de este modelo debo crear una instancia.
+
+$curso = new Curso;
+
+Una vez creada debemos llenarla de propiedades por ejemplo:
+
+$curso->name = 'Laravel';
+
+$curso->descripcion = 'El mejor framework de PHP';
+
+Si yo quiero que me guarde eso de ahí arriba como un registro en la base de datos al objeto debo pasarle la propiedad save()
+
+$curso->save();
+
+Si queremos que nuestro modelo apunte a otra tabla entonces debemos usar la siguiente propiedad dentro del modelo:
+
+protected $table = "nombreTabla";
+
+
+
+
+
 
 
 
