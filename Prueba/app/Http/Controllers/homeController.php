@@ -16,7 +16,7 @@ class homeController extends Controller{
         // return view('welcome');
 
         // Retorno una vista //
-        return view('home');
+        return view('welcome');
 
     }
 
