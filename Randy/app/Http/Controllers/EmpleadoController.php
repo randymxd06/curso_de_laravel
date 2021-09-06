@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empleado;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 class EmpleadoController extends Controller
 {
     /**
@@ -48,6 +48,21 @@ class EmpleadoController extends Controller
     // Funcion para almacenar los datos en la base de datos //
     public function store(Request $request)
     {
+
+        $campos = [
+            'Nombre' => 'required|string|max:100',
+            'Apellido' => 'required|string|max:100',
+            'Email' => 'required|email',
+            'Foto' => 'required|max:10000|mimes:jpeg,png,jpg',
+        ];
+
+        $mensaje = [
+            'required' => 'El :attribute es requerido',
+            'Foto.required' => 'La foto es requerida'
+        ];
+
+        $this->validate($request, $campos, $mensaje);
+
         // Capturo los datos de los empleados y los almaceno en una variable //
         // $datosEmpleado = request()->all();
 
@@ -66,7 +81,10 @@ class EmpleadoController extends Controller
         Empleado::insert($datosEmpleado);
 
         // Retorno en formato json todos los datos enviados del formulario //
-        return response()->json($datosEmpleado);
+        // return response()->json($datosEmpleado);
+
+        // Redirecciono y muestro un mensaje //
+        return redirect('empleado')->with('mensaje', 'El empleado fue agregado correctamente');
 
     }
     // Fin de la funcion store //
@@ -118,6 +136,20 @@ class EmpleadoController extends Controller
         // Capturo todos los datos y los almaceno exceptuando el token y el method, esto es para que el token no aparezca en el json //
         $datosEmpleado = request()->except(['_token', '_method']);
 
+        // Preguntamos que si en los datos que capturo hay archivos //
+        if($request->hasFile('Foto')){
+
+            // Busco el empleado por el id //
+            $empleado = Empleado::findOrFail($id);
+
+            // Borramos la foto //
+            Storage::delete('public/'.$empleado->Foto);
+
+            // Le digo que la almacene en la carpeta uploads //
+            $datosEmpleado['Foto'] = $request->file('Foto')->store('uploads', 'public');
+
+        }
+
         // Actualizamos los datos en la base de datos //
         Empleado::where('id', '=', $id)->update($datosEmpleado);
 
@@ -142,11 +174,20 @@ class EmpleadoController extends Controller
     public function destroy($id)
     {
 
-        // Usando el modelo empleado borramos el registro usando el metodo destroy y pasandole el id del registro que queremos borrar //
-        Empleado::destroy($id);
+        // Almaceno todos los datos que se van a editar en una variable //
+        // findOrFail es para buscar un registro pos su ID //
+        $empleado = Empleado::findOrFail($id);
 
-        // Redireccionamos //
-        return redirect('empleado');
+        // Preguntamos si la imagen está //
+        if(Storage::delete('public/'.$empleado->Foto)){
+
+            // Usando el modelo empleado borramos el registro usando el metodo destroy y pasandole el id del registro que queremos borrar //
+            Empleado::destroy($id);
+
+        }
+
+        // Redireccionamos y le mando un mensaje al usuario //
+        return redirect('empleado')->with('mensaje', 'El empleado fue borrado correctamente');
 
     }
     // Fin de la funcion destroy //

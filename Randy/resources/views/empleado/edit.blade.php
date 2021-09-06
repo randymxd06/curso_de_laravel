@@ -1,5 +1,14 @@
 {{-- Aqui estará el formulario para editar los datos de los empleados. --}}
 
+{{-- Importo app de los layouts --}}
+@extends('layouts.app')
+
+{{-- Abro un section --}}
+@section('content')
+
+{{-- Abro un container --}}
+<div class="container">
+
 {{-- Hago un formulario con el metodo post --}}
 {{-- Este formulario es para enviar el id del usuario que deseo editar --}}
 {{-- El action hace referencia al metodo DELETE si usamos php artisan route:list veremos porque se pone de esta manera --}}
@@ -11,6 +20,12 @@
     {{method_field('PATCH')}}
 
     {{-- Incluimos el formulario --}}
-    @include('empleado.form')
+    @include('empleado.form', ['modo'=>'Editar'])
 
 </form>
+
+</div>
+{{-- Fin del div con la clase container --}}
+
+@endsection
+{{-- Fin del section --}}

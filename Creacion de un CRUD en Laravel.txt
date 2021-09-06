@@ -1,0 +1,763 @@
+-------------------------------------------------------------------------------------------------------------------------------------------
+CREACION DEL PROYECTO
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para la creacion del proyecto debemos usar el siguiente domando:
+
+composer create-project laravel/laravel nombreProyecto
+
+Esto nos va a crear el proyecto laravel.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+CREACION DE LA BASE DE DATOS
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para este proyecto creare una base de datos llamada laravel_crud.
+
+Una vez creada nos ubicamos en el archivo .env del proyecto de laravel y ponemos los datos para hacer la conexion con la base de datos.
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_crud
+DB_USERNAME=root
+DB_PASSWORD=
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+MIGRACIONES
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Una vez creada la base de datos y configurada con nuestro proyecto de laravel procedemos a crear las migraciones.
+
+Las migraciones nos sirven para crear las bases de datos desde laravel.
+
+Por defecto cuando creas el proyecto de laravel te crea varias migraciones.
+
+Para agregar estas migraciones a la base de datos usamos el siguiente comando:
+
+php artisan migrate
+
+Si queremos devolver la base de datos a su estado anterior usamos el siguiente comando:
+
+php artisan migrate:rollback
+
+Si queremos aplicar algunos cambios a la base de datos usamos el comando:
+
+php artisan migrate:fresh
+
+php artisan migrate:refresh
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+CREACION DE MODELOS Y CONTROLADORES
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Una vez creadas las migraciones entonces debemos crear nuestros modelos y controladores.
+
+Los modelos son lo que se conectan con las tablas de nuestra base de datos, para cada tabla se debe crear un modelo.
+
+Los controladores son el intermediario entre la base de datos y la aplicacion, en estos normalmente va la logica.
+
+Para crear estos usamos el siguiente comando:
+
+php artisan make:model nombreModelo -mcr
+
+NOTA: -mcr nos va a crear el modelo y el controlador con todo lo necesario dentro de estos.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+ARREGLANDO LAS COLUMNAS DE LA MIGRACION EMPLEADO QUE SE CREO CON EL COMANDO ANTERIOR
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Una vez ejecutamos el comando anterior php artisan make:model nombreModelo -mcr.
+
+este aparte de crearnos el modelo y el controlador tambien nos crea una migracion.
+
+En esta migracion voy a agrear las siguientes columnas: Nombre, Apellido, Correo.
+
+public function up(){
+
+        Schema::create('empleados', function (Blueprint $table) {
+
+            $table->id();
+            $table->string('Nombre');
+            $table->string('Apellido');
+            $table->string('Email');
+            $table->timestamps();
+
+	});
+
+} 
+
+Una vez agregamos las columnas deseadas usamos el comando: php artisan migrate para agregar la tabla Empleado a la base de datos.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+CREACION DE LAS VISTAS MANEJO DE LAS RUTAS
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Lo primero que voy a hacer antes de crear las vistas sera crear una carpeta para manejar la parte de los empelados
+
+Para este proyecto cree una carpeta llamada empleado y luego cree 4 vistas: index, create, edit y form.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+MANEJO DE LAS RUTAS
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Podemos invocar las vistas desde las rutas pero lo mejor es hacerlo desde el controlador.
+
+Para ver las rutas activas usamos el comando:
+
+php artisan route:list
+
+usamos Route::resource para no tener que hacer varias rutas que haya en un mismo controlador sino que la llamamos a todas 
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+CREACION DEL FORMULARIO
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+{{-- Hacemos un formulario --}}
+{{-- Lo usamos con el metodo post --}}
+{{-- El enctype es para que podamos enviar archivos --}}
+<form action="" method="post" enctype="multipart/form-data">
+
+    {{-- Input del nombre --}}
+    <label for="Nombre">Nombre: </label>
+    <input type="text" name="Nombre" id="Nombre" placeholder="Escribe tu primer nombre" required>
+    <br><br>
+
+    {{-- Input del apellido --}}
+    <label for="Apellido">Apellido: </label>
+    <input type="text" name="Apellido" id="Apellido" placeholder="Escribe tus apellidos" required>
+    <br><br>
+
+    {{-- Input del correo electronico --}}
+    <label for="Email">Email: </label>
+    <input type="email" name="Email" id="Email" placeholder="Escribe tu correo electronico" required>
+    <br><br>
+
+    {{-- Input de la imagen --}}
+    <label for="Foto">Selecciona una imagen: </label>
+    <input type="file" name="Foto" id="Foto">
+    <br><br>
+
+    {{-- Boton enviar --}}
+    <button type="submit">Enviar</button>
+
+</form> {{-- Fin del Formulario --}}
+
+NOTA: hay que ponerle nombre y id a los inputs para que cuando le demos a enviar el request pueda reconocer lo que se está enviando.
+
+NOTA: en la propiedad action del formulario como queremos capturar los datos usando post debemos enviar esos datos usando url()
+para esto lo mejor es usar el comando php artisan route:list para ver la lista de los metodos y las rutas que debemos ponerle al
+action para que haga ese envio.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+COMO CAPTURAR LOS DATOS QUE SE ENVIEN DESDE EL FORMULARIO E INSERTARLOS EN LA BASE DE DATOS
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Esto se maneja desde el controlador.
+
+Cuando vayamos a crear un empleado el metodo create tiene que enviar esa informacion al metodo storage.
+
+El metodo store recibe la informacion que se envie al metodo create y luego la almacena en la tabla de la base de datos.
+
+NOTA: en la propiedad action del formulario como queremos capturar los datos usando post debemos enviar esos datos usando url()
+para esto lo mejor es usar el comando php artisan route:list para ver la lista de los metodos y las rutas que debemos ponerle al
+action para que haga ese envio. por ejemplo: <form action="{{ url('/empleado') }}" method="post" enctype="multipart/form-data">
+La ruta es empleado porque si ejecutamos el comando para ver la lista de las rutas de los metodos encontramos lo siguiente:
+|        |           |                          |                  |                                                            | App\Http\Middleware\Authenticate:sanctum |
+|        | GET|HEAD  | empleado                 | empleado.index   | App\Http\Controllers\EmpleadoController@index              | web
+             |
+|        | POST      | empleado                 | empleado.store   | App\Http\Controllers\EmpleadoController@store              | web
+             |
+|        | GET|HEAD  | empleado/create          | empleado.create  | App\Http\Controllers\EmpleadoController@create             | web
+             |
+|        | GET|HEAD  | empleado/{empleado}      | empleado.show    | App\Http\Controllers\EmpleadoController@show               | web
+             |
+|        | PUT|PATCH | empleado/{empleado}      | empleado.update  | App\Http\Controllers\EmpleadoController@update             | web
+             |
+|        | DELETE    | empleado/{empleado}      | empleado.destroy | App\Http\Controllers\EmpleadoController@destroy            | web
+             |
+|        | GET|HEAD  | empleado/{empleado}/edit | empleado.edit    | App\Http\Controllers\EmpleadoController@edit               | web
+             |
+|        | GET|HEAD  | sanctum/csrf-cookie      |                  | Laravel\Sanctum\Http\Controllers\CsrfCookieController@show | web
+             |
++--------+-----------+--------------------------+------------------+------------------------------------------------------------+------------------------------------------+
+
+Para que laravel pueda responder cuando enviemos datos dentro del formulario debemos poner el token @csrf.
+
+En el metodo store declaramos una variable y usamos los metodos request()->all(), esto lo que hace es capturar todos los datos enviados
+con el metodo post y los almacena en la variable que creamos.
+
+Luego ponemos return response()->json(nombreVariable), esto nos muestra en formato JSON todo lo que capturo la variable cuando enviamos
+usando el metodo post.
+
+Para evitar que en el json aparezca informaciones innesesarias como el valor del boton o el token lo primero que debemos hacer es añadirle
+la propiedad value al boton en el formulario y quitarle cualquier propiedad name o id que tenga y para el token en el metodo store del
+controlador en vez de usar request()->all(), usamos request()->except('_token') esto como dije es para omitir el token, osea para que no
+salga en el json.
+
+Para ingresar esos datos en la base de datos debemos usar el modelo de la tabla que queremos ingresar, luego en el metodo store debemos
+hacer lo siguiente: Empleado::insert($datos); Esto es para insertar los datos que capturamos.
+
+Para capturar la informacion de la foto debemos hacer lo siguiente: en el metodo store debemos preguntar si existe un archivo luego 
+a la variable que tiene los datos que enviamos en la posicion del nombre del archivo le asignamos lo siguiete: 
+$datos['nombreFormArchivo'] = $request->file('nombreFormArchivo')->store('uploads', 'public'); esto lo que hará será asignarle el archivo
+a la variable y almacenarlo en una carpeta llamada uploads en la siguiente ruta: storage\app\public\uploads, si la carpeta no existe
+entoces se puede crear.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+COMO CONSULTAR LA INFORMACION
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para esto vamos a usar el metodo index y creamos una variable que almacene la informacion de la base de datos para luego mostrarla
+pasandosela al index. Usando el modelo utilizamos un metodo llamado paginate para mostrar los registros:
+$datos['nombreVariable'] = nombreModelo::paginate(5) aqui estoy diciendole que a la variable datos que se va a llamar nombreVariable
+que muestre 5 registros, luego para mostrar estos registros en la vista principal o index hago una tabla con lo siguiente: 
+
+{{-- Hago una tabla --}}
+<table class="table table-light">
+
+    {{-- Titulos de la tabla --}}
+    <thead class="thead-light">
+        <tr>
+            <th>No.</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Foto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead> 
+    {{-- Fin de los titulos --}}
+
+    {{-- Contenido de la tabla --}}
+    <tbody>
+
+        {{-- Hago un foreach --}}
+        {{-- Tomo los datos de la variable empleados de mi controlador del metodo index --}}
+        {{-- Muestro los datos de la base de datos --}}
+        @foreach ($empleados as $empleado)
+            <tr>
+                <td>{{ $empleado->id }}</td>
+                <td>{{ $empleado->Nombre }}</td>
+                <td>{{ $empleado->Apellido }}</td>
+                <td>{{ $empleado->Email }}</td>
+                <td>{{ $empleado->Foto }}</td>
+                <td>Editar | Borrar</td>
+            </tr>
+        @endforeach 
+        {{-- Fin del foreach --}}
+
+    </tbody> 
+    {{-- Fin del contenido --}}
+
+</table>
+{{-- Fin de la tabla --}}
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+COMO BORRAR LOS REGISTROS O INFORMACION
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para borrar los registros debemos usar el metodo destroy del controlador que obviamente el metodo que vamos a usar no es el POST es el 
+DELETE y para acceder a este debemos usar la siguiente ruta claro especificando el id del empleado que queremos borrar en la vista: 
+action="{{ url('/nombreRuta/'.$nombreVariable->id) }}", ponemos el @csrf y abajo antes del boton le especificamos que vamos a usar el 
+metodo DELETE {{ method_field('DELETE') }}
+
+{{-- Hago una tabla --}}
+<table class="table table-light">
+
+    {{-- Titulos de la tabla --}}
+    <thead class="thead-light">
+        <tr>
+            <th>No.</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Foto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead> 
+    {{-- Fin de los titulos --}}
+
+    {{-- Contenido de la tabla --}}
+    <tbody>
+
+        {{-- Hago un foreach --}}
+        {{-- Tomo los datos de la variable empleados de mi controlador del metodo index --}}
+        {{-- Muestro los datos de la base de datos --}}
+        @foreach ($empleados as $empleado)
+            <tr>
+                <td>{{ $empleado->id }}</td>
+                <td>{{ $empleado->Nombre }}</td>
+                <td>{{ $empleado->Apellido }}</td>
+                <td>{{ $empleado->Email }}</td>
+                <td>{{ $empleado->Foto }}</td>
+
+                <td>Editar |
+
+                    {{-- Este formulario es para enviar el id del usuario que deseo borrar usando el motodo post --}}
+                    {{-- El action hace referencia al metodo DELETE si usamos php artisan route:list veremos porque se pone de esta manera --}}
+                    <form action="{{ url('/empleado/'.$empleado->id) }}" method="post">
+
+                        {{-- Para que laravel recepcione los datos --}}
+                        @csrf
+
+                        {{-- Como necesitamos el metodo DELETE y no el POST debemos hacer lo siguiente: --}}
+                        {{-- Esto es porque arriba estamos enviando la peticion por metodo post pero para borrar los datos necesitamos el metodo DELETE --}}
+                        {{-- Estp es para que el metodo me acepte el borrado con el id que estoy enviando --}}
+                        {{ method_field('DELETE') }}
+
+                        {{-- Creo un boton para borrar los datos --}}
+                        {{-- onclick es para que cuando le de click el usuario pueda decirle que si o no --}}
+                        <button type="submit" value="Borrar" onclick="return confirm('Deseas borrar el registro?')">Borrar</button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+        @endforeach 
+        {{-- Fin del foreach --}}
+
+    </tbody> 
+    {{-- Fin del contenido --}}
+
+</table>
+{{-- Fin de la tabla --}}
+
+Luego en el controlador vamos hasta el metodo destroy y dentro usando el modelo empleado usamos un metodo llamado destroy y le pasamos un 
+id luego de esto debemos redireccionar.
+
+// Funcion para borrar los datos de la base de datos //
+public function destroy($id)
+{
+
+    // Usando el modelo empleado borramos el registro usando el metodo destroy y pasandole el id del registro que queremos borrar //
+    Empleado::destroy($id);
+
+    // Redireccionamos //
+    return redirect('empleado');
+
+}
+// Fin de la funcion destroy //
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+COMO EDITAR LOS REGISTROS O INFORMACION
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Una vez tengo lo de borrar hecho primero voy a alterar la vista, como el formulario de edit y create son lo mismo entonces, cree un nuevo
+archivo .blade.php para poner el codigo html del formulario y reutilizarlo en las vistas edit y create. Luego lo incluimos en el formulario
+de la vista create usando @include('') tanto dentro del formulario de create como en el archivo de edit, no tenemos que ponerlo dentro de
+un formulario en el archivo edit ya que esto lo haremos en el archivo index de los empleados
+
+{{-- Aqui se mostrara una lista con los empleados --}}
+
+{{-- Hago una tabla --}}
+<table class="table table-light">
+
+    {{-- Titulos de la tabla --}}
+    <thead class="thead-light">
+        <tr>
+            <th>No.</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Foto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead> 
+    {{-- Fin de los titulos --}}
+
+    {{-- Contenido de la tabla --}}
+    <tbody>
+
+        {{-- Hago un foreach --}}
+        {{-- Tomo los datos de la variable empleados de mi controlador del metodo index --}}
+        {{-- Muestro los datos de la base de datos --}}
+        @foreach ($empleados as $empleado)
+            <tr>
+                <td>{{ $empleado->id }}</td>
+                <td>{{ $empleado->Nombre }}</td>
+                <td>{{ $empleado->Apellido }}</td>
+                <td>{{ $empleado->Email }}</td>
+                <td>{{ $empleado->Foto }}</td>
+
+                <td>
+                    
+                    {{-- Este formulario es para enviar el id del usuario que deseo editar--}}
+                    {{-- El action hace referencia al metodo DELETE si usamos php artisan route:list veremos porque se pone de esta manera --}}
+                    <a href="{{ url('/empleado/'.$empleado->id.'/edit') }}">
+                        <button type="submit" value="Editar" onclick="return confirm('Deseas editar el registro?')">Editar</button>
+                    </a>
+                    
+                    {{-- Este formulario es para enviar el id del usuario que deseo borrar usando el motodo post --}}
+                    {{-- El action hace referencia al metodo DELETE si usamos php artisan route:list veremos porque se pone de esta manera --}}
+                    <form action="{{ url('/empleado/'.$empleado->id) }}" method="post">
+
+                        {{-- Para que laravel recepcione los datos --}}
+                        @csrf
+
+                        {{-- Como necesitamos el metodo DELETE y no el POST debemos hacer lo siguiente: --}}
+                        {{-- Esto es porque arriba estamos enviando la peticion por metodo post pero para borrar los datos necesitamos el metodo DELETE --}}
+                        {{-- Estp es para que el metodo me acepte el borrado con el id que estoy enviando --}}
+                        {{ method_field('DELETE') }}
+
+                        {{-- Creo un boton para borrar los datos --}}
+                        {{-- onclick es para que cuando le de click el usuario pueda decirle que si o no --}}
+                        <button type="submit" value="Borrar" onclick="return confirm('Deseas borrar el registro?')">Borrar</button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+        @endforeach 
+        {{-- Fin del foreach --}}
+
+    </tbody> 
+    {{-- Fin del contenido --}}
+
+</table>
+{{-- Fin de la tabla --}}
+
+Luego en el controlador en el metodo edit agrego lo siguiente: 
+
+// Para mostrar los datos a editar y la vista de edit que tiene el formulario //
+public function edit($id)
+{
+
+    // Almaceno todos los datos que se van a editar en una variable //
+    $empleadoEdit = Empleado::findOrFail($id);
+
+    // Muestro la vista edit //
+    // Compact es para mostrar los datos que estan almacenados en la base de datos y se lo pasamos a la vista usando el metodo compact //
+    return view('empleado.edit', compact('empleadoEdit'));
+
+}
+// Fin de la funcion edit //
+
+Y para mostrar esos datos en el formulario a los inputs debemos agregarle la propiedad o atributo value y le pongo en valor del la
+variable empleado que es la que tiene los registros almacenados, listos para mostrarlos.
+
+{{-- Aqui va a ir el formulario en comun de los archivos create y edit. --}}
+
+{{-- Esto son cosas que van a variar por lo que lo pongo aqui para reutilizarlo --}}
+
+{{-- Token CSRF --}}
+{{-- Esto es una llave de seguridad y con esto ya laravel nos responderá cuando le enviemos la informacion al storage --}}
+@csrf
+
+{{-- Input del nombre --}}
+<label for="Nombre">Nombre: </label>
+<input type="text" name="Nombre" id="Nombre" placeholder="Escribe tu primer nombre" value="{{ $empleado->Nombre }}" required>
+<br><br>
+
+{{-- Input del apellido --}}
+<label for="Apellido">Apellido: </label>
+<input type="text" name="Apellido" id="Apellido" placeholder="Escribe tus apellidos" value="{{ $empleado->Apellido }}" required>
+<br><br>
+
+{{-- Input del correo electronico --}}
+<label for="Email">Email: </label>
+<input type="email" name="Email" id="Email" placeholder="Escribe tu correo electronico" value="{{ $empleado->Email }}" required>
+<br><br>
+
+{{-- Input de la imagen --}}
+<label for="Foto">Selecciona una imagen: </label>
+<input type="file" name="Foto" id="Foto" value="{{ $empleado->Foto }}">
+<br><br>
+
+{{-- Boton enviar --}}
+<button type="submit" value="Enviar">Enviar</button>
+
+Luego para mostrar la informacion de la imagen hacemos lo siguiente: sacamos el value del input del archivo arriba de este:
+
+{{-- Input de la imagen --}}
+<label for="Foto">Selecciona una imagen: </label>
+{{-- Esto es para mostrar la informacion del archivo --}}
+{{ $empleado->Foto }}
+<input style="margin-left: 10px" type="file" name="Foto" id="Foto" value="">
+<br><br>
+
+Luego en el archivo edit agregamos un formulario y le ponemos el metodo post y dentro incluimos la vista form.
+
+Luego vamos a la vista edit a agragar el action para el metodo PATCH de la siguiente forma:
+
+Luego en el controlador en el metodo update es que vamos a actualizar los datos de la base de datos.
+
+// Funcion para actualizar los datos en la base de datos //
+    // Le pasamos el id //
+    public function update(Request $request, $id)
+    {
+
+        // Capturo todos los datos y los almaceno exceptuando el token y el method, esto es para que el token no aparezca en el json //
+        $datosEmpleado = request()->except(['_token', '_method']);
+
+        // Actualizamos los datos en la base de datos //
+        Empleado::where('id', '=', $id)->update($datosEmpleado);
+
+        // Almaceno todos los datos que se van a editar en una variable //
+        // findOrFail es para buscar un registro pos su ID //
+        $empleado = Empleado::findOrFail($id);
+
+        // Muestro la vista edit //
+        // Compact es para mandar los datos que estan almacenados en la base de datos y se lo pasamos a la vista usando el metodo compact //
+        return view('empleado.edit', compact('empleado'));
+
+    }
+    // Fin de la funcion update //
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+COMO MOSTRAR LA IMAGEN DEL STORAGE
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para mostrar la imagen del storage debemos irnos al index y nos ubicamos en la parte de la foto en la tabla y hacemos lo siguiente:
+
+<td>
+    {{-- asset nos da acceso al deposito llamado storage --}}
+    <img src="{{ asset('storage').'/'.$empleado->Foto }}" width="100" alt="Imagen del Empleado">
+</td>
+
+Y luego para hacer una conexion con esa carpeta debemos usar el comando:
+
+php artisan storage:link
+
+Tambien podemos agregar esa etiqueta img al formulario de la vista form.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+MODIFICACION DE LA FOTO EXISTENTE
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para eso debemos ubicarnos en el metodo update del controlador empleado y antes del update agregamos lo siguiente:
+
+// Preguntamos que si en los datos que capturo hay archivos //
+if($request->hasFile('Foto')){
+
+    // Le digo que la almacene en la carpeta uploads //
+    $datos['Foto'] = $request->file('Foto')->store('uploads', 'public');
+
+}
+
+Para hacer el borrado debemos incluir una clase que contiene varios elementos para borrar
+
+use Illuminate\Support\Facades\Storage;
+
+Luego en el metodo update en el if para saber si hay foto o no hacemos lo siguiente:
+
+// Preguntamos que si en los datos que capturo hay archivos //
+if($request->hasFile('Foto')){
+
+    // Busco el empleado por el id //
+    $empleado = Empleado::findOrFail($id);
+
+    // Borramos la foto
+    Storage::delete('public/'.$empleado->Foto);
+
+    // Le digo que la almacene en la carpeta uploads //
+    $datosEmpleado['Foto'] = $request->file('Foto')->store('uploads', 'public');
+
+}
+
+
+Agregamos esta linea de codigo antes del update y en los formularios agregamos lo siguiente:
+
+<img src="{{ asset('storage').'/'.$empleado->Foto }}" width="100" alt="Imagen del Empleado">
+
+Agregamos esta estiqueta img si no lo hicimos anteriormente y quitamos esto: {{ $empleado->Foto }}
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+AJUSTANDO LOS FORMULARIOS
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para esto debemos hacer la validacion en la vista form.
+
+En el value haciendo la siguiente pregunta:
+
+isset($variable->Nombre)?$variable->Nombre:''
+
+Preguntamos si existe, si no entonces le ponemos vacio.
+
+Y para la imagen ponemos lo siguiente: 
+
+@if(isset($empleado->Foto))
+{{-- Esto es para mostrar la informacion del archivo --}}
+{{-- {{ $empleado->Foto }} --}}
+{{-- Muestro la imagen --}}
+<img src="{{ asset('storage').'/'.$empleado->Foto }}" width="100" alt="Imagen del Empleado">
+@endif
+
+Para borrar la imagen cuando borramos el registro en el metodo destroy del controlador hacemos lo siguiente:
+
+// Funcion para borrar los datos de la base de datos //
+    public function destroy($id)
+    {
+
+        // Almaceno todos los datos que se van a editar en una variable //
+        // findOrFail es para buscar un registro pos su ID //
+        $empleado = Empleado::findOrFail($id);
+
+        // Preguntamos si la imagen está //
+        if(Storage::delete('public/'.$empleado->Foto)){
+
+            // Usando el modelo empleado borramos el registro usando el metodo destroy y pasandole el id del registro que queremos borrar //
+            Empleado::destroy($id);
+
+        }
+
+        // Redireccionamos //
+        return redirect('empleado');
+
+    }
+    // Fin de la funcion destroy //
+
+Para los mensajes de texto hacemos lo siguiente:
+
+En la vista index arriba del todo ponemos el siguiente codigo:
+
+{{-- Si en la sesion hay un mensaje, capturamos ese mensaje --}}
+@if(Session::has('mensaje'))
+
+    {{-- Tomamos ese mensaje --}}
+    {{ Session::get('mensaje') }}
+
+@endif
+{{-- Fin del if --}}
+
+Luego en el controlador en el metodo store quitamos el siguiente codigo: return response()->json($datos);
+
+Y podemos el siguiente codigo:
+
+return redirect('empleado')->with('mensaje', 'El empleado fue agregado correctamente');
+
+Lo mismo podemos hacer en el metodo destroy.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+COMO INTEGRAR UNA AUTENTIFICACION
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Primero que todo debemos usar el siguiente comando:
+
+composer require laravel/ui
+
+Luego debemos usar el siguinte comando:
+
+php artisan ui bootstrap --auth
+
+Luego vamos a poner el comando:
+
+npm install
+
+Luego que todo termine si volvemos a la raiz ('/') veremos que tendremos el login y el boton de registrar arriba a la derecha.
+
+Luego nos registramos, despues le damos a logout y luego vamos a las rutas y en la ruta de la raiz quitamos return view('welcome');
+por return view('auth.login'); esto es para que cuando vayamos a la raiz aparezca el login.
+
+Despues de esto voy a lar rutas y agrego el siguiente codigo para que cuando yo me loggee con la cuenta me redirija a empleados
+
+Route::get('/home', [EmpleadoController::class, 'index'])->name('home');
+
+// Cuando el usuario se loggee se va a ir al index de EmpleadoController
+Route::group(['middleware' => 'auth'], function(){
+
+    Route::get('/', [EmpleadoController::class, 'index'])->name('home');
+
+});
+
+
+Ahora usamos los templates para hacer las referencias para que se muestren los enlaces arriba para esto debemos ir a la vista index
+y ponemos el siguiente codigo arriba del todo:
+
+@extends('layouts.app')
+
+@section('content')
+
+{{-- Abro un container --}}
+<div class="container">
+
+</div>
+{{-- Fin del div con la clase container --}}
+
+@endsection
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+VALIDACION DE FORMULARIOS
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para eso debemos ir al controlador en el metodo store y agregar lo siguiente arriba:
+
+$campos = [
+    'Nombre' => 'required|string|max:100',
+    'Apellido' => 'required|string|max:100',
+    'Email' => 'required|email',
+    'Foto' => 'required|max:10000|mimes:jpeg,png,jpg',
+];
+
+$mensaje = [
+     'required' => 'El :attribute es requerido',
+     'Foto.required' => 'La foto es requerida'
+];
+
+$this->validate($request, $campos, $mensaje);
+
+Luego arriba en la vista form abajo del titulo pongo el codigo:
+
+{{-- Hago un if --}}
+@if(count($errors)>0)
+
+    <div class="alert alert-danger" role="alert">
+
+        <ul>
+
+            @foreach($errors->all() as $error)
+
+                <li>
+                    {{$error}}
+                </li>
+
+            @endforeach
+
+        </ul>
+
+    </div>
+
+@endif
+{{-- Fin del if --}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+COMO BORRAR EL CACHE DE LA APLICACION
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Para borrar el cache de la aplicacion usamos el siguiente comando:
+
+php artisan optimize
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

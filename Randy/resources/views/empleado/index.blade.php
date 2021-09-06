@@ -1,5 +1,26 @@
 {{-- Aqui se mostrara una lista con los empleados --}}
 
+{{-- Importo app de los layouts --}}
+@extends('layouts.app')
+
+{{-- Abro un section --}}
+@section('content')
+
+{{-- Abro un container --}}
+<div class="container">
+
+{{-- Si en la sesion hay un mensaje, capturamos ese mensaje --}}
+@if(Session::has('mensaje'))
+
+    {{-- Tomamos ese mensaje --}}
+    {{ Session::get('mensaje') }}
+
+@endif
+{{-- Fin del if --}}
+
+{{-- Link que nos lleva a registrar un nuevo empleado --}}
+<a href="{{ url('empleado/create') }}">Registrar nuevo empleado</a>
+
 {{-- Hago una tabla --}}
 <table class="table table-light">
 
@@ -28,19 +49,22 @@
                 <td>{{ $empleado->Nombre }}</td>
                 <td>{{ $empleado->Apellido }}</td>
                 <td>{{ $empleado->Email }}</td>
-                <td>{{ $empleado->Foto }}</td>
+                <td>
+                    {{-- asset nos da acceso al deposito llamado storage --}}
+                    <img class="img-thumbnail img-fluid" src="{{ asset('storage').'/'.$empleado->Foto }}" width="100" alt="Imagen del Empleado">
+                </td>
 
                 <td>
                     
                     {{-- Este formulario es para enviar el id del usuario que deseo editar --}}
                     {{-- El action hace referencia al metodo DELETE si usamos php artisan route:list veremos porque se pone de esta manera --}}
                     <a href="{{ url('/empleado/'.$empleado->id.'/edit') }}">
-                        <button type="submit" value="Editar" onclick="return confirm('Deseas editar el registro?')">Editar</button>
+                        <button type="submit" value="Editar" onclick="return confirm('Deseas editar el registro?')" class="btn btn-warning">Editar</button>
                     </a>
                     
                     {{-- Este formulario es para enviar el id del usuario que deseo borrar usando el motodo post --}}
                     {{-- El action hace referencia al metodo DELETE si usamos php artisan route:list veremos porque se pone de esta manera --}}
-                    <form action="{{ url('/empleado/'.$empleado->id) }}" method="post">
+                    <form action="{{ url('/empleado/'.$empleado->id) }}" method="post" class="d-inline">
 
                         {{-- Para que laravel recepcione los datos --}}
                         @csrf
@@ -52,7 +76,7 @@
 
                         {{-- Creo un boton para borrar los datos --}}
                         {{-- onclick es para que cuando le de click el usuario pueda decirle que si o no --}}
-                        <button type="submit" value="Borrar" onclick="return confirm('Deseas borrar el registro?')">Borrar</button>
+                        <button type="submit" value="Borrar" onclick="return confirm('Deseas borrar el registro?')" class="btn btn-danger">Borrar</button>
 
                     </form>
 
@@ -67,3 +91,9 @@
 
 </table>
 {{-- Fin de la tabla --}}
+
+</div>
+{{-- Fin del div con la clase container --}}
+
+@endsection
+{{-- Fin del section --}}

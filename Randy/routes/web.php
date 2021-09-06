@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EmpleadoController;
 
 /*
@@ -16,8 +17,24 @@ use App\Http\Controllers\EmpleadoController;
 
 // Ruta principal //
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 // Para acceder a todas las URL del controlador Empleado //
-Route::resource('empleado', EmpleadoController::class);
+// El middleware('auth') es para que si estoy en el login y trato de ingresar a una ruta sin estar logeado me mande al login hasta autentificarme //
+Route::resource('empleado', EmpleadoController::class)->middleware('auth');
+
+// Esto es para que no me aparezca el register y el reset en la vista //
+Auth::routes(['register'=>false, 'reset'=>false]);
+
+// Ya no necesito HomeController 
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/home', [EmpleadoController::class, 'index'])->name('home');
+
+// Cuando el usuario se loggee se va a ir al index de EmpleadoController
+Route::group(['middleware' => 'auth'], function(){
+
+    Route::get('/', [EmpleadoController::class, 'index'])->name('home');
+
+});
